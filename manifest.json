@@ -1,0 +1,17 @@
+{
+    "name": "Restaurant Reviews",
+    "short_name":"ReRe",
+    "description": "A little demo nanodegree project which makes it easy to find restaurants",
+    "version": "0.1.8",
+    "manifest_version": 1,
+    "icons": [{
+        "src": "img/Ico_512.jpg",
+        "sizes": "512x512",
+        "type": "image/jpg"
+    }],
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "/",
+    "theme_color": "#b56000",
+    "background_color":"#333"
+  }
