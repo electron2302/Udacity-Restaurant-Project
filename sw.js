@@ -1,4 +1,4 @@
-var CurrentCacheName = "static-v4";
+var CurrentCacheName = "static-v5";
 
 self.addEventListener('install',function(event) {
     event.waitUntil(
@@ -17,6 +17,7 @@ self.addEventListener('install',function(event) {
                 'img/8-600.jpg', 
                 'img/9-600.jpg',
                 'img/10-600.jpg',
+                'img/stock-600.jpg',
                 'js/idb.js',
                 'js/dbhelper.js',
                 'js/main.js',

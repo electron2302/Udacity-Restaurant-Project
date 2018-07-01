@@ -47,8 +47,7 @@ class DBHelper {
   /**
    * Fetch a restaurant by its ID.
    */
-  static fetchRestaurantById(id, callback) { ///////////////////////////////////////////////////////////////////////////////
-    // fetch all restaurants with proper error handling.
+  static fetchRestaurantById(id, callback) {
     const dbPromise = DBHelper.OpenIDB();
     dbPromise.then(function(db) {
       var tx = db.transaction('restaurants');
@@ -66,7 +65,6 @@ class DBHelper {
    * Fetch restaurants by a cuisine type with proper error handling.
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
-    // Fetch all restaurants  with proper error handling
     const dbPromise = DBHelper.OpenIDB();
     dbPromise.then(function(db) {
       var tx = db.transaction('restaurants');
@@ -84,7 +82,6 @@ class DBHelper {
    * Fetch restaurants by a neighborhood with proper error handling.
    */
   static fetchRestaurantByNeighborhood(neighborhood, callback) {
-    // Fetch all restaurants
     const dbPromise = DBHelper.OpenIDB();
     dbPromise.then(function(db) {
       var tx = db.transaction('restaurants');
@@ -102,7 +99,6 @@ class DBHelper {
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
-    // Fetch all restaurants
     var results = [];
     const dbPromise = DBHelper.OpenIDB();
     dbPromise.then(function(db) {
@@ -133,7 +129,6 @@ class DBHelper {
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods(callback) {
-    // Fetch all restaurants
     var uniqueNeighborhoods = [];
     var oldNeighborhoods = "";
     const dbPromise = DBHelper.OpenIDB();
@@ -205,11 +200,21 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    if(restaurant.photograph){
+      return (`/img/${restaurant.photograph}`);
+    };
+    return (`/img/stock`);
   }
 
   static imageAltTextForRestaurant(restaurant){
-    return("ImgAltText atribute missing in sails db untli now "); // """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    if(restaurant.ImgAltText){
+      return(restaurant.ImgAltText);
+    }
+    let ImgAltText = "Picture of ";
+    if(restaurant.cuisine_type){ImgAltText = ImgAltText + restaurant.cuisine_type + " ";}
+    ImgAltText += "Restaurant"
+    if(restaurant.neighborhood){ImgAltText = ImgAltText + " in " + restaurant.neighborhood;}
+    return(ImgAltText); 
   }
 
   static h1Id(restaurant) {
