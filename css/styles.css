@@ -215,6 +215,15 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   line-height: 1.1;
   width: 100%;
 }
+
+#is_favorite_icon{
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  padding: 10px;
+  font-size: 30px;
+}
+
 #restaurant-img {
 	width: 100%;
 }
@@ -256,6 +265,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   flex-wrap: wrap;
 }
 #reviews-list li {
+  width: 100%;
   background-color: #fff;
   border: 2px solid #f3f3f3;
   display: block;
@@ -277,6 +287,21 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 #reviews-list li .rating {
   text-decoration: underline;
+}
+#reviews-list li input {
+  width: 100%;
+  min-height: 30px;
+  font-size: 2em;
+}
+#reviews-list li textarea {
+  width: 100%;
+  min-height: 70px;
+  font-size: 1.5em;
+}
+#reviews-list li button {
+  /*width: 80px;*/
+  min-height: 40px;
+  font-size: 1.3em;
 }
 #restaurant-hours td {
   color: #666;

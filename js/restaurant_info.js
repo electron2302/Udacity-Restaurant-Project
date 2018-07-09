@@ -1,5 +1,6 @@
 let restaurant;
 var newMap;
+var test;
 
 /**
  * Initialize map as soon as the page is loaded.
@@ -58,7 +59,11 @@ fetchRestaurantFromURL = (callback) => {
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
-  name.innerHTML = restaurant.name;
+  var starType; 
+  if(restaurant.is_favorite == "true"){starType = "star";}
+  else{starType = "star_border";}
+  const star = `<i id="is_favorite_icon" class="material-icons" onclick="change_favorite(this)" >${starType}</i>`;
+  name.innerHTML = star + restaurant.name;
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
@@ -108,23 +113,42 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = () => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
-
-  if (!reviews) {
-    const noReviews = document.createElement('p');
-    noReviews.innerHTML = 'No reviews yet!';
-    container.appendChild(noReviews);
-    return;
-  }
-  const ul = document.getElementById('reviews-list');
-  reviews.forEach(review => {
-    ul.appendChild(createReviewHTML(review));
+  
+  //console.log(restaurant.id);
+  const dbPromise = DBHelper.OpenIDB();
+  dbPromise.then(function(db) {
+    var tx = db.transaction('reviews');
+    var reviewsStore = tx.objectStore('reviews');
+    var restaurantIdIndex = reviewsStore.index('restaurantId');
+    return restaurantIdIndex.getAll(parseInt(self.restaurant.id));
+  }).then(function(reviews) {
+    console.log(reviews);
+    if (!reviews) {
+      const noReviews = document.createElement('p');
+      noReviews.innerHTML = 'No reviews yet!';
+      container.appendChild(noReviews);
+      return;
+    }
+    const ul = document.getElementById('reviews-list');
+    reviews.forEach(review => {
+      ul.appendChild(createReviewHTML(review));
+    });
+    ul.appendChild(createReviewForm());
+    container.appendChild(ul);
+  }).catch(function(error) {
+    console.error(error);
   });
-  container.appendChild(ul);
+    
+}
+
+clearReviewsHTML = () => {
+  const container = document.getElementById('reviews-container');
+  container.innerHTML = `<ul id="reviews-list"></ul>`;
 }
 
 /**
@@ -155,6 +179,28 @@ createReviewHTML = (review) => {
   return li;
 }
 
+createReviewForm = () => {
+  const li = document.createElement('li'); //action="http://localhost:9999"
+  li.innerHTML = `
+  <form onsubmit="AddReview(this)" action="javascript:void(0);" method="POST" id="AddReviewForm">
+    <label>Name:
+      <input type="text" name="name" placeholder="Your Name">
+    </label>
+    <br>
+    <label>Rating:
+      <input type="number" name="rating" min="0" max="5" step="1">
+    </label>
+    <br>
+    <label>Comments:
+      <textarea name="comments" form="AddReviewForm"></textarea>
+    </label>
+    <br>
+    <button type="submit">Add Review</button>
+  </form>`;
+
+  return li;
+}
+
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
@@ -179,4 +225,126 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+change_favorite = (data) => {
+
+  tets = data;
+
+  var value = data.innerText
+
+  if(value == "star_border"){
+    data.innerText = "star";
+    change_favorite_DB("true");
+    change_favorite_IDB("true");
+  }
+  else if(value == "star"){
+    data.innerText = "star_border";
+    change_favorite_DB("false");
+    change_favorite_IDB("false");
+  }
+  else{console.error("star_border or star was expected")}
+
+}
+
+change_favorite_IDB = (Bdata) =>{
+  const dbPromise = DBHelper.OpenIDB();
+  dbPromise.then(function(db) {
+    var tx = db.transaction('restaurants', 'readwrite');
+    var restaurantsStrore = tx.objectStore('restaurants');
+    return restaurantsStrore.openCursor();
+  }).then(function CursorRestaurants(cursor){
+    if(!cursor || cursor.value.id > parseInt(self.restaurant.id)) return;
+    if(cursor.value.id < parseInt(self.restaurant.id)) return cursor.continue().then(CursorRestaurants);
+
+    if(cursor.value.id == parseInt(self.restaurant.id)){
+      var updateData = cursor.value;
+      updateData.is_favorite = Bdata;
+      cursor.update(updateData)
+      .then(() =>{
+        console.log("resturant with ID " + self.restaurant.id + " is_favorite was set to " + Bdata)
+        return;
+      });
+    }
+    else{console.error("this should never be able to run")}
+  
+  }).then(function() {
+    console.log('Done Cursoring for changing is_favorite');
+  })
+  .catch(function(error) {
+    console.error(error)
+  });
+}
+
+change_favorite_DB = (data) =>{
+
+  fetch(`http://localhost:1337/restaurants/${self.restaurant.id}/?is_favorite=${data}`, {
+    method: "PUT",
+    credentials: "include", // just to be shure, i have seen there is an cookie for sails or somthing like that 
+    cache: "no-cache", // just to be save, because this gets send with forms nativly, and i wnt to mimike that as close as posible
+  })
+  .then(response => console.log("put request successful"))
+  .catch(error => console.error(error));
+}
+
+AddReviewDierectlyToIDBandUpdateUI = (Data) =>{
+  const dbPromise = DBHelper.OpenIDB();
+  dbPromise.then(function(db) {
+    var tx = db.transaction('reviews', 'readwrite');
+    var reviewsStrore = tx.objectStore('reviews');
+    
+    reviewsStrore.put(Data);
+    return tx.complete;
+  }).then(function() {
+    console.log('it worked');
+    clearReviewsHTML();
+    fillReviewsHTML();
+  })
+}
+
+SaveAndSendLater = (Data) =>{
+  
+  Data.id = Math.floor(Math.random() * 101) * (-1); // i give it a negativ random int on purpose
+
+  const dbPromise = DBHelper.OpenIDB();
+  dbPromise.then(function(db) {
+    var tx = db.transaction('reviews', 'readwrite');
+    var reviewsStrore = tx.objectStore('reviews');
+    
+    reviewsStrore.put(Data);
+    return tx.complete;
+  }).then(function() {
+    console.log('it worked for now');
+    clearReviewsHTML();
+    fillReviewsHTML();
+  })
+}
+
+AddReview = (form) => {
+
+  const Data = {
+    "restaurant_id": parseInt(self.restaurant.id),
+    "name": form["name"].value,
+    "rating": parseInt(form["rating"].value),
+    "comments": form["comments"].value
+  };
+
+  fetch("http://localhost:1337/reviews/", {
+    method: "POST",
+    credentials: "include", // just to be shure, i have seen there is an cookie for sails or somthing like that 
+    cache: "no-cache", // just to be save, because this gets send with forms nativly, and i wnt to mimike that as close as posible
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify(Data),
+  })
+  .then(response => response.json())
+  .then(function(jResponse) {
+    AddReviewDierectlyToIDBandUpdateUI(jResponse);
+  })
+  .catch(function(error) {
+    console.error(error);
+    SaveAndSendLater(Data)
+  });
+
 }

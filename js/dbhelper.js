@@ -9,22 +9,25 @@ class DBHelper {
    */
   static get DATABASE_URL() {
     const port = 1337; // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${port}/`;
   }
 
   static OpenIDB(){
-    return idb.open('RestaurantReviewsProject', 1, function(upgradeDb) {
+    return idb.open('RestaurantReviewsProject', 2, function(upgradeDb) {
       switch (upgradeDb.oldVersion) { // switch case intentionally without break !
         case 0:
             var restaurantStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
             restaurantStore.createIndex('neighborhood', 'neighborhood');
             restaurantStore.createIndex('cuisine', 'cuisine_type');
+        case 1:
+            var reviewStore = upgradeDb.createObjectStore('reviews', {keyPath: 'id'});
+            reviewStore.createIndex('restaurantId', 'restaurant_id');
       }
     }); 
   }
 
   static fetchAllRestaurants() {
-    fetch(DBHelper.DATABASE_URL)
+    fetch(DBHelper.DATABASE_URL + "restaurants/")
     .then(response => response.json())
     .then(function(restaurants) {
       const dbPromise = DBHelper.OpenIDB();
@@ -34,15 +37,99 @@ class DBHelper {
 
           restaurants.forEach(restaurant => {
             restaurantsStore.put(restaurant);
+            DBHelper.fetchAllReviews(restaurant.id); //I'm assuming that this isn't the best option because This is not very scalable but in this case there is no option to add more restaurant so I think it should be fine
           });
 
           return tx.complete;
       }).then(function() {
-        console.log('AllRestaurants in DB create or updatet')
+        console.log('All Restaurants in DB create or updatet')
+      });
+    })
+    .catch(e => console.log(e));
+    //DBHelper.fetchAllReviews();         doesnt wor that way because of that stupid sails Limit
+    DBHelper.checkForUploadableDatabaseEntries();
+  }
+
+  static fetchAllReviews(id) {
+    if(id){id = "?restaurant_id=" + id}
+    fetch(DBHelper.DATABASE_URL + "reviews/" +id)
+    .then(response => response.json())
+    .then(function(reviews) {
+      const dbPromise = DBHelper.OpenIDB();
+      dbPromise.then(function(db) {
+          var tx = db.transaction('reviews', 'readwrite');
+          var reviewsStore = tx.objectStore('reviews');
+
+          reviews.forEach(review => {
+            reviewsStore.put(review);
+          });
+
+          return tx.complete;
+      }).then(function() {
+        console.log('All Reviews in DB create or updatet' )
       });
     })
     .catch(e => console.log(e));
   }
+
+  static checkForUploadableDatabaseEntries(){
+    const dbPromise = DBHelper.OpenIDB();
+    dbPromise.then(function(db) {
+      var tx = db.transaction('reviews', 'readwrite');
+      var reviewsStore = tx.objectStore('reviews');
+  
+      return reviewsStore.openCursor();
+    }).then(function CursorReviews(cursor){
+      if(!cursor || cursor.value.id > 0) return; 
+
+      console.log('try uploading:',cursor.value.id);
+
+      var oldData = cursor.value;
+
+      delete oldData.id;
+
+      DBHelper.tryUploading(oldData, (newData) =>{
+        console.log("calbalck was trigert");
+        if(newData){
+          cursor.update(newData)
+          .then(function() {
+            console.log("cursor.update worked ! woohu");
+            return cursor.continue().then(CursorReviews);
+          })
+          .catch(error => console.error("cursor.update faild" + error));
+        }
+        else{console.error("TryUploading Callbak Faild");}
+      });
+  
+    }).then(function() {
+      console.log('Done Cursoring the upload');
+    })
+    .catch(function(error) {
+      console.error(error)
+    });
+  }
+
+  static tryUploading(data, callback){
+    fetch("http://localhost:1337/reviews/", {
+      method: "POST",
+      credentials: "include", // just to be shure, i have seen there is an cookie for sails or somthing like that 
+      cache: "no-cache", // just to be save, because this gets send with forms nativly, and i wnt to mimike that as close as posible
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(function(jResponse) {
+      console.log(jResponse);
+      callback(jResponse);
+    })
+    .catch(function(error) {
+      console.error("couldn't upload" + error)
+      callback(null);
+    });
+  }
+
 
   /**
    * Fetch a restaurant by its ID.
@@ -206,6 +293,8 @@ class DBHelper {
     return (`/img/stock`);
   }
 
+  
+
   static imageAltTextForRestaurant(restaurant){
     if(restaurant.ImgAltText){
       return(restaurant.ImgAltText);
@@ -249,4 +338,4 @@ function RegisterServiceWorker(){
   });
 }
 
-RegisterServiceWorker();
+//RegisterServiceWorker();
