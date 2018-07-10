@@ -182,7 +182,7 @@ createReviewHTML = (review) => {
 createReviewForm = () => {
   const li = document.createElement('li'); //action="http://localhost:9999"
   li.innerHTML = `
-  <form onsubmit="AddReview(this)" action="javascript:void(0);" method="POST" id="AddReviewForm">
+  <form onsubmit="onReviewSubmisson(this)" action="javascript:void(0);" method="POST" id="AddReviewForm">
     <label>Name:
       <input type="text" name="name" placeholder="Your Name">
     </label>
@@ -287,6 +287,8 @@ change_favorite_DB = (data) =>{
   .catch(error => console.error(error));
 }
 
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////cut
+
 AddReviewDierectlyToIDBandUpdateUI = (Data) =>{
   const dbPromise = DBHelper.OpenIDB();
   dbPromise.then(function(db) {
@@ -347,4 +349,40 @@ AddReview = (form) => {
     SaveAndSendLater(Data)
   });
 
+}
+*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////cut 
+function onReviewSubmisson(form){
+  const Data = {
+      "restaurant_id": parseInt(self.restaurant.id),
+      "name": form["name"].value,
+      "rating": parseInt(form["rating"].value),
+      "comments": form["comments"].value
+  };
+  addReviewToDBtemporarily(Data)
+  .then(console.log("This runs"))
+  .then(() => navigator.serviceWorker.ready) // like in https://youtu.be/cmGr0RszHc8?t=40m42s wy is it not working
+  .then((reg) => {
+    console.log('A service worker is active:'); // This never runs
+    reg.sync.register('send-review');
+    console.log("reg.sync.register('send-review') send :)");
+  })
+  .catch(error => console.error('onReviewSubmisson Faild: ' + error));
+}
+
+addReviewToDBtemporarily = (Data) =>{
+  
+  Data.id = Math.floor(Math.random() * 101) * (-1); // i give it a negativ random int on purpose
+
+  const dbPromise = DBHelper.OpenIDB();
+  return dbPromise.then(function(db) {
+    var tx = db.transaction('reviews', 'readwrite');
+    var reviewsStrore = tx.objectStore('reviews');
+    
+    reviewsStrore.put(Data);
+    return tx.complete;
+  }).then(function() {
+    console.log('addToDBtemporarily ran');
+    clearReviewsHTML();
+    fillReviewsHTML();
+  })
 }

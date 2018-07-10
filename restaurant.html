@@ -35,7 +35,8 @@
   <main id="maincontent">
     <!-- Beginning map -->
     <section id="map-container">
-      <div id="map" role="application" aria-label="location" style="display: none;"></div>
+        <div id="map_placeholer" onclick="LoadMap()"><div class="centerText">Click to Load Map</div></div>
+      <div id="map" role="application" aria-label="location"></div>
     </section>
     <!-- End map -->
     <!-- Beginning restaurant -->
@@ -73,6 +74,21 @@
   <script type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBl3Ry01CULX3p-0ICZIff2tSWniiMsTKY&libraries=places"></script>
+
+  <script>
+      function RegisterServiceWorker(){
+        if(!navigator.serviceWorker) return; //catch for older browsers
+      
+        navigator.serviceWorker.register('sw.js').then(function(){
+          console.log("RegisterServiceWorker worked");
+        }).catch(function() {
+          console.log("RegisterServiceWorker faild");
+        });
+      }
+      
+      RegisterServiceWorker();
+  </script>
+
   <!-- End scripts -->
 
 </body>

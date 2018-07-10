@@ -47,7 +47,7 @@ class DBHelper {
     })
     .catch(e => console.log(e));
     //DBHelper.fetchAllReviews();         doesnt wor that way because of that stupid sails Limit
-    DBHelper.checkForUploadableDatabaseEntries();
+    //DBHelper.checkForUploadableDatabaseEntries();
   }
 
   static fetchAllReviews(id) {
@@ -72,7 +72,7 @@ class DBHelper {
     .catch(e => console.log(e));
   }
 
-  static checkForUploadableDatabaseEntries(){
+/*  static checkForUploadableDatabaseEntries(){
     const dbPromise = DBHelper.OpenIDB();
     dbPromise.then(function(db) {
       var tx = db.transaction('reviews', 'readwrite');
@@ -128,7 +128,7 @@ class DBHelper {
       console.error("couldn't upload" + error)
       callback(null);
     });
-  }
+  }*/
 
 
   /**
@@ -333,14 +333,3 @@ LoadMap = () =>{
 
 // i register the ServiceWorker in this js file because this file is loaded in both pages 
 
-function RegisterServiceWorker(){
-  if(!navigator.serviceWorker) return; //catch for older browsers
-
-  navigator.serviceWorker.register('sw.js').then(function(){
-    console.log("RegisterServiceWorker worked");
-  }).catch(function() {
-    console.log("RegisterServiceWorker faild");
-  });
-}
-
-RegisterServiceWorker();
