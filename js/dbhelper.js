@@ -326,6 +326,11 @@ class DBHelper {
 
 }
 
+LoadMap = () =>{
+  document.getElementById("map").style.display = "block";
+  document.getElementById("map_placeholer").style.display = "none";
+}
+
 // i register the ServiceWorker in this js file because this file is loaded in both pages 
 
 function RegisterServiceWorker(){
@@ -338,4 +343,4 @@ function RegisterServiceWorker(){
   });
 }
 
-//RegisterServiceWorker();
+RegisterServiceWorker();

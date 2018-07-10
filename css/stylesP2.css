@@ -1,143 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 
-body,td,th,p{
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	color: #333;
-	line-height: 1.5;
-}
-body {
-	background-color: #fdfdfd;
-	margin: 0;
-	position:relative;
-}
-ul, li {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	color: #333;
-}
-a {
-	color: #a56900;
-	text-decoration: none;
-}
-a:hover, a:focus {
-	color: #3397db;
-	text-decoration: none;
-}
-a img{
-	border: none 0px #fff;
-}
-h1, h2, h3, h4, h5, h6 {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0 0 20px;
-}
-article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, #headline, section {
-	display: block;
-}
-#maincontent {
-  display: flex;
-  flex-wrap: wrap;
-  background-color: #f3f3f3;
-  min-height: 100%;
-}
-#footer {
-  background-color: #444;
-  color: #bbb;
-  font-size: 8pt;
-  letter-spacing: 1px;
-  padding: 25px;
-  text-align: center;
-  text-transform: uppercase;
-}
-#footer a{
-  color: #d0a98b;
-}
-/* ====================== Navigation ====================== */
-#headline {
-  width: 100%;
-  background-color: #252831;
-  text-align:center;
-}
-#headline h1 {
-  margin: auto;
-  padding: 0.75em;
-}
-#headline h1 a {
-  color: #fff;
-  font-size: 1.75rem;
-  font-weight: 200;
-  letter-spacing: 10px;
-  text-transform: uppercase;
-}
-#headline h1 a:hover{
-  color: #b56000;
-}
-#breadcrumb {
-    padding: 10px;
-    list-style: none;
-    background-color: #eee;
-    font-size: 17px;
-    margin: 0;
-}
 
-/* Display list items side by side */
-#breadcrumb li {
-    display: inline;
-}
-
-/* Add a slash symbol (/) before/behind each list item */
-#breadcrumb li+li:before {
-    padding: 8px;
-    color: black;
-    content: "/\00a0";
-}
-
-/* Add a color to all links inside the list */
-#breadcrumb li a {
-    color: #0275d8;
-    text-decoration: none;
-}
-
-/* Add a color on mouse-over */
-#breadcrumb li a:hover {
-    color: #01447e;
-    text-decoration: underline;
-}
-/* ====================== Map ====================== */
-#map {
-  height: 400px;
-  width: 100%;
-  background-color: #ccc;
-}
-/* ====================== Restaurant Filtering ====================== */
-.filter-options {
-  width: 100%;
-  background-color: #3397DB;
-  align-items: center;
-}
-.filter-options h2 {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: normal;
-  line-height: 1;
-  padding: 20px 20px 0px 10px;
-  margin:  0px;
-}
-.filter-options select {
-  background-color: white;
-  border: 1px solid #fff;
-  font-family: Arial,sans-serif;
-  font-size: 11pt;
-  height: 48px;
-  letter-spacing: 0;
-  margin: 10px;
-  padding: 0 10px;
-  width: calc(100% - (2 * (10px + 1px + 10px)));
-}
-.filter-options select:focus {
-  box-shadow: 0 0 10px 5px;
-}
 
 /* ====================== Restaurant Listing ====================== */
 #restaurants-list {
@@ -199,7 +63,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   width: 100%;
   height: 35vh;
 }
-.inside #map {
+.inside #map, .inside #map_placeholer {
   background-color: #ccc;
   height: 100%;
   width: 100%;
@@ -328,7 +192,7 @@ for main page
     text-align: center;
     font-size: 2rem;
   }
-  #map{
+  #map, #map_placeholer{
     width: 70%;
   }
 }
@@ -337,7 +201,7 @@ for main page
   .filter-options{
     width: 350px;
   }
-  #map{
+  #map, #map_placeholer{
     width: calc(100% - 350px);
   }
 }

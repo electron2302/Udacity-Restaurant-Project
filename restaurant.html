@@ -7,7 +7,8 @@
   <!-- Normalize.css for better cross-browser consistency -->
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <!-- Main CSS file -->
-  <link rel="stylesheet" href="css/styles.css" type="text/css">
+  <link rel="stylesheet" href="css/stylesP1.css">
+  <link rel="preload" as="style" href="css/stylesP2.css" onload="this.rel='stylesheet'">
   <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>Restaurant Info</title>
@@ -34,14 +35,14 @@
   <main id="maincontent">
     <!-- Beginning map -->
     <section id="map-container">
-      <div id="map" role="application" aria-label="location"></div>
+      <div id="map" role="application" aria-label="location" style="display: none;"></div>
     </section>
     <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
       <h1 id="restaurant-name"></h1>
       <div id="img-cuisine">
-        <img id="restaurant-img">
+        <img id="restaurant-img" alt="Picture of Restaurant">
         <p id="restaurant-cuisine"></p>
       </div>
       <div id="address-hours">
