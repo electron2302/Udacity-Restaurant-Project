@@ -62,7 +62,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   var starType; 
   if(restaurant.is_favorite == "true"){starType = "star";}
   else{starType = "star_border";}
-  const star = `<i id="is_favorite_icon" class="material-icons" onclick="change_favorite(this)" >${starType}</i>`;
+  const star = `<button class="btndis" aria-label="favorite" onclick="change_favorite()"><i id="is_favorite_icon" class="material-icons"  >${starType}</i></button>`;
   name.innerHTML = star + restaurant.name;
 
   const address = document.getElementById('restaurant-address');
@@ -115,7 +115,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = () => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
   
@@ -227,19 +227,17 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-change_favorite = (data) => {
+change_favorite = () => {
 
-  tets = data;
+  var value = document.getElementById("is_favorite_icon")
 
-  var value = data.innerText
-
-  if(value == "star_border"){
-    data.innerText = "star";
+  if(value.innerText == "star_border"){
+    value.innerText = "star";
     change_favorite_DB("true");
     change_favorite_IDB("true");
   }
-  else if(value == "star"){
-    data.innerText = "star_border";
+  else if(value.innerText == "star"){
+    value.innerText = "star_border";
     change_favorite_DB("false");
     change_favorite_IDB("false");
   }

@@ -171,6 +171,12 @@
   color: #666;
 }
 
+.btndis{
+  border: none;
+  background: none;
+  color: #b56000;
+}
+
 /**
 for main page
 */
