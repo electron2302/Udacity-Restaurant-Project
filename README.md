@@ -21,3 +21,5 @@ as far as I can tell this is because "navigator.serviceWorker.ready" (restaurant
 even though I've tried to follow this Tutorials as closely as possible
 https://youtu.be/cmGr0RszHc8?t=40m42s
 https://developers.google.com/web/updates/2015/12/background-sync
+
+Any ideas or solution Please, or are these problem even recreatable?
